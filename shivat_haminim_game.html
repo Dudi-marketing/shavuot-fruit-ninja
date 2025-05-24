@@ -110,8 +110,22 @@
         }
 
         .fruit-emoji {
-            font-size: 3rem;
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
             margin-bottom: 8px;
+        }
+
+        .target-fruit .fruit-emoji {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .falling-fruit .fruit-emoji {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
         }
 
         .fruit-name {
@@ -454,25 +468,25 @@
                     <div class="fruit-emoji">🌿</div>
                     <div class="fruit-name">שעורה</div>
                 </div>
-                <div class="fruit-item" data-fruit="grapes">
+                <div class="fruit-item" data-fruit="grape">
                     <div class="fruit-emoji">🍇</div>
                     <div class="fruit-name">ענבים</div>
                 </div>
-                <div class="fruit-item" data-fruit="figs">
-                    <div class="fruit-emoji">🍈</div>
-                    <div class="fruit-name">תאנים</div>
+                <div class="fruit-item" data-fruit="fig">
+                    <img src="fig_64.png" class="fruit-emoji" alt="תאנה">
+                    <div class="fruit-name">תאנה</div>
                 </div>
                 <div class="fruit-item" data-fruit="pomegranate">
-                    <div class="fruit-emoji">🍎</div>
-                    <div class="fruit-name">רימונים</div>
+                    <img src="pomegranate_64.png" class="fruit-emoji" alt="רימון">
+                    <div class="fruit-name">רימון</div>
                 </div>
-                <div class="fruit-item" data-fruit="olives">
-                    <div class="fruit-emoji">🫒</div>
-                    <div class="fruit-name">זיתים</div>
+                <div class="fruit-item" data-fruit="olive">
+                    <img src="olive_transparent_64.png" class="fruit-emoji" alt="זית">
+                    <div class="fruit-name">זית</div>
                 </div>
-                <div class="fruit-item" data-fruit="dates">
+                <div class="fruit-item" data-fruit="date">
                     <div class="fruit-emoji">🌴</div>
-                    <div class="fruit-name">תמרים</div>
+                    <div class="fruit-name">תמר</div>
                 </div>
             </div>
             
@@ -523,14 +537,14 @@
 
     <script>
         // משתני משחק
-        const FRUITS = {
-            wheat: { emoji: '🌾', name: 'חיטה' },
-            barley: { emoji: '🌿', name: 'שעורה' },
-            grapes: { emoji: '🍇', name: 'ענבים' },
-            figs: { emoji: '🍈', name: 'תאנים' },
-            pomegranate: { emoji: '🍎', name: 'רימונים' },
-            olives: { emoji: '🫒', name: 'זיתים' },
-            dates: { emoji: '🌴', name: 'תמרים' }
+        const fruits = {
+            wheat: { emoji: '🌾', name: 'חיטה', points: 10 },
+            barley: { emoji: '🌿', name: 'שעורה', points: 10 },
+            grape: { emoji: '🍇', name: 'ענבים', points: 15 },
+            fig: { emoji: '🍈', name: 'תאנה', points: 15 },
+            pomegranate: { emoji: '🍎', name: 'רימון', points: 20 },
+            olive: { emoji: '🫒', name: 'זית', points: 20 },
+            date: { emoji: '🌴', name: 'תמר', points: 25 }
         };
 
         const DISTRACTORS = {
@@ -548,12 +562,12 @@
             },
             { 
                 title: 'שלב 2 - חתכו:', 
-                targets: ['grapes', 'figs'],
+                targets: ['grape', 'fig'],
                 description: 'ענבים ותאנים'
             },
             { 
                 title: 'שלב 3 - חתכו:', 
-                targets: ['olives', 'dates', 'pomegranate'],
+                targets: ['olive', 'date', 'pomegranate'],
                 description: 'זיתים, תמרים ורימונים'
             }
         ];
@@ -568,6 +582,7 @@
         let gameInterval;
         let spawnInterval;
         let clickedFruits = new Set();
+        let baseSpeed, randSpeed;
 
         // אלמנטים
         const introScreen = document.getElementById('introScreen');
@@ -580,7 +595,7 @@
         document.querySelectorAll('.fruit-item').forEach(item => {
             item.addEventListener('click', () => {
                 const fruitKey = item.dataset.fruit;
-                const fruitName = FRUITS[fruitKey].name;
+                const fruitName = fruits[fruitKey].name;
                 speak(fruitName);
                 
                 // הוספת אינדיקציה שנלחץ
@@ -670,13 +685,21 @@
             fruitsContainer.innerHTML = '';
             
             level.targets.forEach(fruitKey => {
-                const fruit = FRUITS[fruitKey];
+                const fruit = fruits[fruitKey];
                 const fruitDiv = document.createElement('div');
                 fruitDiv.className = 'fruit-item';
-                fruitDiv.innerHTML = `
-                    <div class="fruit-emoji">${fruit.emoji}</div>
-                    <div class="fruit-name">${fruit.name}</div>
-                `;
+                if (fruitKey === 'fig' || fruitKey === 'pomegranate' || fruitKey === 'olive') {
+                    const imgSrc = fruitKey === 'olive' ? 'olive_transparent_64.png' : `${fruitKey}_64.png`;
+                    fruitDiv.innerHTML = `
+                        <img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">
+                        <div class="fruit-name">${fruit.name}</div>
+                    `;
+                } else {
+                    fruitDiv.innerHTML = `
+                        <div class="fruit-emoji">${fruit.emoji}</div>
+                        <div class="fruit-name">${fruit.name}</div>
+                    `;
+                }
                 fruitDiv.addEventListener('click', () => {
                     speak(fruit.name);
                     fruitDiv.style.transform = 'scale(1.2)';
@@ -714,13 +737,21 @@
             targetDisplay.innerHTML = '';
             
             level.targets.forEach(fruitKey => {
-                const fruit = FRUITS[fruitKey];
+                const fruit = fruits[fruitKey];
                 const targetDiv = document.createElement('div');
                 targetDiv.className = 'target-fruit';
-                targetDiv.innerHTML = `
-                    <div class="fruit-emoji">${fruit.emoji}</div>
-                    <div class="fruit-name">${fruit.name}</div>
-                `;
+                if (fruitKey === 'fig' || fruitKey === 'pomegranate' || fruitKey === 'olive') {
+                    const imgSrc = fruitKey === 'olive' ? 'olive_transparent_64.png' : `${fruitKey}_64.png`;
+                    targetDiv.innerHTML = `
+                        <img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">
+                        <div class="fruit-name">${fruit.name}</div>
+                    `;
+                } else {
+                    targetDiv.innerHTML = `
+                        <div class="fruit-emoji">${fruit.emoji}</div>
+                        <div class="fruit-name">${fruit.name}</div>
+                    `;
+                }
                 targetDisplay.appendChild(targetDiv);
             });
         }
@@ -739,7 +770,7 @@
             
             let fruit, isTarget;
             if (level.targets.includes(randomFruit)) {
-                fruit = FRUITS[randomFruit];
+                fruit = fruits[randomFruit];
                 isTarget = true;
             } else {
                 fruit = DISTRACTORS[randomFruit];
@@ -748,20 +779,38 @@
             
             const fruitElement = document.createElement('div');
             fruitElement.className = 'falling-fruit';
-            fruitElement.textContent = fruit.emoji;
+            
+            if (randomFruit === 'fig' || randomFruit === 'pomegranate' || randomFruit === 'olive') {
+                const imgSrc = randomFruit === 'olive' ? 'olive_transparent_64.png' : `${randomFruit}_64.png`;
+                fruitElement.innerHTML = `<img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">`;
+            } else {
+                fruitElement.innerHTML = `<div class="fruit-emoji">${fruit.emoji}</div>`;
+            }
+            
             fruitElement.style.left = Math.random() * (window.innerWidth - 80) + 'px';
             fruitElement.style.top = '-80px';
             fruitElement.dataset.isTarget = isTarget;
             fruitElement.dataset.fruitKey = randomFruit;
             
-            fruitElement.style.pointerEvents = 'auto'; // מאפשר אינטראקציה עם הפרי
+            fruitElement.style.pointerEvents = 'auto';
             
-            gameScreen.appendChild(fruitElement);
+            if (typeof currentDifficulty === 'undefined' || currentDifficulty === 1) {
+                baseSpeed = 2;
+                randSpeed = 3;
+            } else if (currentDifficulty === 2) {
+                baseSpeed = 5;
+                randSpeed = 3;
+            } else if (currentDifficulty === 3) {
+                baseSpeed = 11;
+                randSpeed = 5;
+            }
             fallingFruits.push({
                 element: fruitElement,
                 y: -80,
-                speed: 2 + Math.random() * 3
+                speed: baseSpeed + Math.random() * randSpeed
             });
+            
+            gameScreen.appendChild(fruitElement);
         }
 
         let isSlicing = false;
@@ -836,7 +885,7 @@
             createSliceEffect(x, y);
             
             if (isTarget) {
-                score += 10;
+                score += fruits[fruitKey].points;
                 correctCuts++;
                 
                 if (correctCuts >= 5) {
@@ -868,15 +917,14 @@
                 const piece = document.createElement('div');
                 piece.className = 'fruit-piece';
                 
-                // בחירת אמוג'י לחלק
-                let pieceEmoji;
-                if (FRUITS[fruitKey]) {
-                    pieceEmoji = FRUITS[fruitKey].emoji;
+                // בחירת תצוגה לחלק
+                if (fruitKey === 'fig' || fruitKey === 'pomegranate' || fruitKey === 'olive') {
+                    const imgSrc = fruitKey === 'olive' ? 'olive_transparent_64.png' : `${fruitKey}_64.png`;
+                    piece.innerHTML = `<img src="${imgSrc}" class="fruit-emoji" alt="${fruits[fruitKey].name}">`;
                 } else {
-                    pieceEmoji = DISTRACTORS[fruitKey].emoji;
+                    piece.innerHTML = `<div class="fruit-emoji">${fruits[fruitKey].emoji}</div>`;
                 }
                 
-                piece.textContent = pieceEmoji;
                 piece.style.left = centerX + 'px';
                 piece.style.top = centerY + 'px';
                 
