@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק זיהוי שבעת המינים</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFE4B5, #F0E68C);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #8B4513;
+            margin-top: 32px;
+            margin-bottom: 8px;
+            font-size: 2rem;
+        }
+        .desc {
+            color: #8B4513;
+            font-size: 1.2rem;
+            margin-bottom: 18px;
+        }
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            max-width: 420px;
+            margin: 30px auto 20px auto;
+            width: 100%;
+        }
+        .memory-card {
+            background: #f8f8ff;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px #0001;
+            border: 2px solid #eee;
+            min-height: 100px;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            cursor: pointer;
+            font-size: 1.1rem;
+            user-select: none;
+        }
+        .memory-card.selected {
+            background: #e0ffe0;
+            border: 2px solid #32CD32;
+            box-shadow: 0 4px 16px #32cd3233;
+            transform: scale(1.05);
+        }
+        .memory-card .fruit-emoji {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 6px;
+        }
+        .memory-card .fruit-name {
+            font-size: 1.1rem;
+            color: #8B4513;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        .memory-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .memory-controls button {
+            padding: 12px 28px;
+            border-radius: 18px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #6c63ff;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0002;
+            transition: 0.2s;
+            opacity: 0.9;
+        }
+        .memory-controls button:disabled {
+            background: #ccc;
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>שלב 4 - זיהוי שבעת המינים</h1>
+    <div class="desc">זהו את שבעת המינים מתוך הקלפים:</div>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <div class="memory-controls">
+        <button id="checkMemoryBtn" disabled>בדוק תשובות</button>
+    </div>
+    <script>
+        const fruits = {
+            wheat: { emoji: '🌾', name: 'חיטה' },
+            barley: { emoji: '🌿', name: 'שעורה' },
+            grape: { emoji: '🍇', name: 'ענבים' },
+            fig: { emoji: '🍈', name: 'תאנה' },
+            pomegranate: { emoji: '🍎', name: 'רימון' },
+            olive: { emoji: '🫒', name: 'זית' },
+            date: { emoji: '🌴', name: 'תמר' }
+        };
+        const DISTRACTORS = {
+            apple: { emoji: '🍏', name: 'תפוח' },
+            banana: { emoji: '🍌', name: 'בננה' },
+            carrot: { emoji: '🥕', name: 'גזר' },
+            strawberry: { emoji: '🍓', name: 'תות' },
+            orange: { emoji: '🍊', name: 'תפוז' },
+            pear: { emoji: '🍐', name: 'אגס' },
+            cucumber: { emoji: '🥒', name: 'מלפפון' },
+            tomato: { emoji: '🍅', name: 'עגבניה' },
+            pepper: { emoji: '🫑', name: 'פלפל' }
+        };
+        const allCards = [
+            ...Object.keys(fruits),
+            ...Object.keys(DISTRACTORS)
+        ];
+        let shuffledCards = allCards.sort(() => Math.random() - 0.5).slice(0, 16);
+        const memoryGrid = document.getElementById('memoryGrid');
+        let selectedCards = new Set();
+        function renderGrid() {
+            memoryGrid.innerHTML = '';
+            shuffledCards.forEach(cardKey => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'memory-card';
+                cardDiv.dataset.fruitKey = cardKey;
+                const fruit = fruits[cardKey] || DISTRACTORS[cardKey];
+                cardDiv.innerHTML = `
+                    <div class="fruit-emoji">${fruit.emoji}</div>
+                    <div class="fruit-name">${fruit.name}</div>
+                `;
+                cardDiv.onclick = () => {
+                    if (selectedCards.has(cardKey)) {
+                        cardDiv.classList.remove('selected');
+                        selectedCards.delete(cardKey);
+                    } else {
+                        if (selectedCards.size >= 7) return;
+                        cardDiv.classList.add('selected');
+                        selectedCards.add(cardKey);
+                    }
+                    document.getElementById('checkMemoryBtn').disabled = selectedCards.size !== 7;
+                };
+                memoryGrid.appendChild(cardDiv);
+            });
+        }
+        renderGrid();
+        document.getElementById('checkMemoryBtn').onclick = function() {
+            let correct = 0;
+            document.querySelectorAll('.memory-card').forEach(card => {
+                const key = card.dataset.fruitKey;
+                if (fruits[key]) {
+                    if (selectedCards.has(key)) {
+                        card.style.background = '#b6ffb6';
+                        correct++;
+                    } else {
+                        card.style.background = '';
+                    }
+                } else {
+                    if (selectedCards.has(key)) {
+                        card.style.background = '#ffb6b6';
+                    } else {
+                        card.style.background = '';
+                    }
+                }
+            });
+            setTimeout(() => {
+                if (correct === 7) {
+                    alert('אתם אלופים! היה כייף ללמוד איתכם על שבעת המינים תוך כדי משחק! 🌟');
+                } else {
+                    alert('לא כל הבחירות נכונות, נסו שוב!');
+                }
+                // reset
+                selectedCards.clear();
+                renderGrid();
+                document.getElementById('checkMemoryBtn').disabled = true;
+            }, 1200);
+        };
+    </script>
+</body>
+</html> 

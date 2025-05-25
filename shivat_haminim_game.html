@@ -450,6 +450,95 @@
                 padding: 8px 16px;
             }
         }
+
+        .memory-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .memory-card.selected {
+            background: rgba(144,238,144,0.9);
+            border: 2px solid #32CD32;
+            transform: scale(1.05);
+        }
+        
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            max-width: 420px;
+            margin: 30px auto 20px auto;
+            width: 100%;
+        }
+
+        .memory-card {
+            background: #f8f8ff;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px #0001;
+            border: 2px solid #eee;
+            min-height: 100px;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            cursor: pointer;
+            font-size: 1.1rem;
+            user-select: none;
+        }
+
+        .memory-card.selected {
+            background: #e0ffe0;
+            border: 2px solid #32CD32;
+            box-shadow: 0 4px 16px #32cd3233;
+            transform: scale(1.05);
+        }
+
+        .memory-card .fruit-emoji {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 6px;
+        }
+
+        .memory-card .fruit-name {
+            font-size: 1.1rem;
+            color: #8B4513;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .memory-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .memory-controls button {
+            padding: 12px 28px;
+            border-radius: 18px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #6c63ff;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #0002;
+            transition: 0.2s;
+            opacity: 0.9;
+        }
+
+        .memory-controls button:disabled {
+            background: #ccc;
+            color: #888;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
@@ -513,7 +602,7 @@
         <div class="level-intro-screen hidden" id="levelIntroScreen">
             <h1 id="levelIntroTitle">שלב 1</h1>
             <p style="font-size: 1.3rem; margin-bottom: 20px; color: #8B4513;">חתכו את המינים הבאים:</p>
-            <div class="fruits-grid" id="levelIntroFruits">
+            <div id="levelIntroFruits">
                 <!-- ייווסף דינמית -->
             </div>
             <button class="continue-button" id="continueBtn">המשך לשלב!</button>
@@ -551,7 +640,12 @@
             apple: { emoji: '🍏', name: 'תפוח' },
             banana: { emoji: '🍌', name: 'בננה' },
             carrot: { emoji: '🥕', name: 'גזר' },
-            strawberry: { emoji: '🍓', name: 'תות' }
+            strawberry: { emoji: '🍓', name: 'תות' },
+            orange: { emoji: '🍊', name: 'תפוז' },
+            pear: { emoji: '🍐', name: 'אגס' },
+            cucumber: { emoji: '🥒', name: 'מלפפון' },
+            tomato: { emoji: '🍅', name: 'עגבניה' },
+            pepper: { emoji: '🌶️', name: 'פלפל' }
         };
 
         const LEVELS = [
@@ -569,6 +663,11 @@
                 title: 'שלב 3 - חתכו:', 
                 targets: ['olive', 'date', 'pomegranate'],
                 description: 'זיתים, תמרים ורימונים'
+            },
+            {
+                title: 'שלב 4 - זיהוי שבעת המינים',
+                type: 'memory',
+                description: 'זיהו את שבעת המינים מתוך הקלפים'
             }
         ];
 
@@ -1013,11 +1112,142 @@
             
             if (currentLevel >= LEVELS.length) {
                 gameWin();
+            } else if (LEVELS[currentLevel].type === 'memory') {
+                startMemoryGame();
             } else {
                 // מעבר למסך ביניים של השלב הבא
                 gameScreen.classList.add('hidden');
                 showLevelIntro();
             }
+        }
+
+        function startMemoryGame() {
+            gameScreen.classList.add('hidden');
+            levelIntroScreen.classList.remove('hidden');
+            // הסתר כפתור המשך
+            const continueBtn = document.getElementById('continueBtn');
+            continueBtn.style.display = 'none';
+            const level = LEVELS[currentLevel];
+            document.getElementById('levelIntroTitle').textContent = level.title;
+            // עדכון ההוראה
+            const levelIntroDesc = levelIntroScreen.querySelector('p');
+            if (levelIntroDesc) levelIntroDesc.textContent = 'זהו את שבעת המינים מתוך הקלפים:';
+            
+            // יצירת מערך של כל הקלפים - קודם שבעת המינים
+            const sevenSpecies = Object.keys(fruits);
+            const distractors = Object.keys(DISTRACTORS);
+            
+            // ערבוב המסיחים ובחירת 9 מהם
+            const shuffledDistractors = distractors.sort(() => Math.random() - 0.5).slice(0, 9);
+            
+            // שילוב שבעת המינים עם המסיחים
+            const allCards = [...sevenSpecies, ...shuffledDistractors];
+            
+            // ערבוב סופי של כל הקלפים
+            let shuffledCards = allCards.sort(() => Math.random() - 0.5);
+            
+            // יצירת רשת הקלפים
+            const fruitsContainer = document.getElementById('levelIntroFruits');
+            fruitsContainer.innerHTML = '';
+            fruitsContainer.className = '';
+            fruitsContainer.classList.add('memory-grid');
+            shuffledCards.forEach(cardKey => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'memory-card';
+                cardDiv.dataset.fruitKey = cardKey;
+                const fruit = fruits[cardKey] || DISTRACTORS[cardKey];
+                if (cardKey === 'fig' || cardKey === 'pomegranate' || cardKey === 'olive') {
+                    const imgSrc = cardKey === 'olive' ? 'olive_transparent_64.png' : `${cardKey}_64.png`;
+                    cardDiv.innerHTML = `
+                        <img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">
+                        <div class="fruit-name">${fruit.name}</div>
+                    `;
+                } else {
+                    cardDiv.innerHTML = `
+                        <div class="fruit-emoji">${fruit.emoji}</div>
+                        <div class="fruit-name">${fruit.name}</div>
+                    `;
+                }
+                cardDiv.addEventListener('click', () => handleCardClick(cardDiv));
+                fruitsContainer.appendChild(cardDiv);
+            });
+            // כפתור בדוק תשובות
+            let controls = document.querySelector('.memory-controls');
+            if (!controls) {
+                controls = document.createElement('div');
+                controls.className = 'memory-controls';
+                const checkBtn = document.createElement('button');
+                checkBtn.id = 'checkMemoryBtn';
+                checkBtn.textContent = 'בדוק תשובות';
+                checkBtn.disabled = true;
+                checkBtn.onclick = checkMemoryAnswers;
+                controls.appendChild(checkBtn);
+                fruitsContainer.parentNode.appendChild(controls);
+            }
+            // איפוס בחירות
+            selectedCards.clear();
+            document.getElementById('checkMemoryBtn').disabled = true;
+            controls.style.display = 'flex';
+            // איפוס פידבק ויזואלי
+            document.querySelectorAll('.memory-card').forEach(card => {
+                card.style.background = '';
+                card.classList.remove('selected');
+            });
+        }
+
+        let selectedCards = new Set();
+
+        function handleCardClick(cardDiv) {
+            const fruitKey = cardDiv.dataset.fruitKey;
+            if (selectedCards.has(fruitKey)) {
+                cardDiv.classList.remove('selected');
+                selectedCards.delete(fruitKey);
+            } else {
+                if (selectedCards.size >= 7) return;
+                cardDiv.classList.add('selected');
+                selectedCards.add(fruitKey);
+            }
+            document.getElementById('checkMemoryBtn').disabled = selectedCards.size !== 7;
+        }
+
+        function checkMemoryAnswers() {
+            // בדיקת בחירות
+            let correct = 0;
+            document.querySelectorAll('.memory-card').forEach(card => {
+                const key = card.dataset.fruitKey;
+                if (Object.keys(fruits).includes(key)) {
+                    if (selectedCards.has(key)) {
+                        card.style.background = '#b6ffb6';
+                        correct++;
+                    } else {
+                        card.style.background = '';
+                    }
+                } else {
+                    if (selectedCards.has(key)) {
+                        card.style.background = '#ffb6b6';
+                    } else {
+                        card.style.background = '';
+                    }
+                }
+            });
+            setTimeout(() => {
+                if (correct === 7) {
+                    alert('אתם אלופים! היה כייף ללמוד איתכם על שבעת המינים תוך כדי משחק! 🌟');
+                } else {
+                    alert('לא כל הבחירות נכונות, נסו שוב!');
+                }
+                // חזרה למסך פתיחה בלבד
+                currentLevel = 0;
+                score = 0;
+                lives = 3;
+                correctCuts = 0;
+                clickedFruits.clear();
+                selectedCards.clear();
+                gameScreen.classList.add('hidden');
+                levelIntroScreen.classList.add('hidden');
+                introScreen.classList.remove('hidden');
+                updateStartButton();
+            }, 1200);
         }
 
         function gameOver() {
@@ -1042,7 +1272,12 @@
         }
 
         function gameWin() {
-            alert('כל הכבוד! סיימתם את כל השלבים!\nלמדתם את שבעת המינים!');
+            const allSevenSelected = Object.keys(fruits).every(key => selectedCards.has(key));
+            if (allSevenSelected) {
+                alert('אתם אלופים! היה כייף ללמוד איתכם על שבעת המינים תוך כדי משחק! 🌟');
+            } else {
+                alert('כל הכבוד! סיימתם את כל השלבים!\nלמדתם את שבעת המינים!');
+            }
             
             // איפוס למשחק מחדש
             currentLevel = 0;
@@ -1050,10 +1285,11 @@
             lives = 3;
             correctCuts = 0;
             clickedFruits.clear();
+            selectedCards.clear();
             
             // איפוס מסך הפתיחה
             document.querySelectorAll('.fruit-item').forEach(item => {
-                item.classList.remove('clicked');
+                item.classList.remove('clicked', 'selected');
                 const checkMark = item.querySelector('.check-mark');
                 if (checkMark) {
                     checkMark.remove();
