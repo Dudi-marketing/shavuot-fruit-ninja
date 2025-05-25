@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>שבעת המינים נינג'ה</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
     <style>
         * {
             margin: 0;
@@ -21,6 +23,11 @@
             padding: 0;
             position: fixed;
             width: 100%;
+            cursor: crosshair;
+        }
+
+        body.slicing {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M2 30 L30 2 L28 0 L0 28 Z" fill="%23FFD700" stroke="%23B8860B" stroke-width="2"/><circle cx="30" cy="2" r="2" fill="%23C0C0C0"/></svg>'), crosshair !important;
         }
 
         .game-container {
@@ -61,9 +68,9 @@
 
         .fruits-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(7, 1fr);
             gap: 15px;
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px;
             width: 90%;
         }
@@ -110,10 +117,19 @@
         }
 
         .fruit-emoji {
-            width: 64px;
-            height: 64px;
-            object-fit: contain;
-            margin-bottom: 8px;
+            font-size: 3rem !important;
+            margin-bottom: 5px !important;
+            width: 64px !important;
+            height: 64px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .fruit-emoji img {
+            width: 64px !important;
+            height: 64px !important;
+            object-fit: contain !important;
         }
 
         .target-fruit .fruit-emoji {
@@ -122,10 +138,29 @@
             object-fit: contain;
         }
 
-        .falling-fruit .fruit-emoji {
-            width: 64px;
-            height: 64px;
+        .falling-fruit {
+            position: absolute;
+            font-size: 4rem;
+            cursor: crosshair;
+            user-select: none;
+            transition: transform 0.1s;
+            z-index: 50;
+            pointer-events: auto;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .falling-fruit img {
+            width: 80px;
+            height: 80px;
             object-fit: contain;
+        }
+
+        .falling-fruit:active {
+            transform: scale(1.2);
         }
 
         .fruit-name {
@@ -278,20 +313,6 @@
             font-weight: bold;
         }
 
-        .falling-fruit {
-            position: absolute;
-            font-size: 4rem;
-            cursor: crosshair;
-            user-select: none;
-            transition: transform 0.1s;
-            z-index: 50;
-            pointer-events: auto;
-        }
-
-        .falling-fruit:active {
-            transform: scale(1.2);
-        }
-
         .slice-effect {
             position: absolute;
             width: 100px;
@@ -350,7 +371,7 @@
             .difficulty-btn span {
                 font-size: 0.7rem;
             }
-        }
+            
             .intro-screen h1, .level-intro-screen h1 {
                 font-size: 1.6rem;
                 margin: 5px 0 15px 0;
@@ -362,11 +383,18 @@
             }
             
             .fruit-emoji {
-                font-size: 2.2rem;
+                font-size: 2.2rem !important;
+                width: 48px !important;
+                height: 48px !important;
+            }
+            
+            .fruit-emoji img {
+                width: 48px !important;
+                height: 48px !important;
             }
             
             .fruits-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
                 gap: 8px;
                 margin: 10px;
                 width: 95%;
@@ -428,6 +456,7 @@
             }
             
             .fruits-grid {
+                grid-template-columns: repeat(3, 1fr);
                 gap: 6px;
                 width: 98%;
             }
@@ -438,7 +467,14 @@
             }
             
             .fruit-emoji {
-                font-size: 2rem;
+                font-size: 2rem !important;
+                width: 40px !important;
+                height: 40px !important;
+            }
+            
+            .fruit-emoji img {
+                width: 40px !important;
+                height: 40px !important;
             }
             
             .fruit-name {
@@ -454,11 +490,24 @@
         .memory-card {
             cursor: pointer;
             transition: all 0.3s ease;
+            background: #f8f8ff;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px #0001;
+            border: 2px solid #eee;
+            min-height: 100px;
+            min-width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            user-select: none;
         }
         
         .memory-card.selected {
-            background: rgba(144,238,144,0.9);
+            background: #e0ffe0;
             border: 2px solid #32CD32;
+            box-shadow: 0 4px 16px #32cd3233;
             transform: scale(1.05);
         }
         
@@ -473,30 +522,6 @@
             max-width: 420px;
             margin: 30px auto 20px auto;
             width: 100%;
-        }
-
-        .memory-card {
-            background: #f8f8ff;
-            border-radius: 18px;
-            box-shadow: 0 2px 8px #0001;
-            border: 2px solid #eee;
-            min-height: 100px;
-            min-width: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-            cursor: pointer;
-            font-size: 1.1rem;
-            user-select: none;
-        }
-
-        .memory-card.selected {
-            background: #e0ffe0;
-            border: 2px solid #32CD32;
-            box-shadow: 0 4px 16px #32cd3233;
-            transform: scale(1.05);
         }
 
         .memory-card .fruit-emoji {
@@ -539,10 +564,313 @@
             cursor: not-allowed;
             opacity: 0.6;
         }
+
+        .coin {
+            position: fixed;
+            width: 48px;
+            height: 48px;
+            background: #FFD700;
+            border-radius: 50%;
+            animation: fly 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: 150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes fly {
+            to {
+                transform: translateY(-200px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        #coinLabel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: #8B4513;
+            z-index: 200;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        #timerBox {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 15px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #8B4513;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-size: 1.5rem;
+            min-width: 100px;
+            text-align: center;
+            border: 3px solid #32CD32;
+        }
+
+        #timerBox.warning {
+            border-color: #FF6B6B;
+            background: rgba(255, 107, 107, 0.1);
+            animation: pulse 1s infinite;
+        }
+
+        .slice-trail {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #FFD700;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 60;
+            animation: trailFade 0.5s ease-out forwards;
+            box-shadow: 0 0 8px #FFD700;
+        }
+
+        @keyframes trailFade {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.3); }
+        }
+
+        /* Responsive emoji sizes */
+        @media (min-width: 1024px) {
+            .fruit-emoji {
+                width: 80px;
+                height: 80px;
+                font-size: 3rem;
+            }
+            
+            .falling-fruit .fruit-emoji {
+                width: 80px;
+                height: 80px;
+                font-size: 4rem;
+            }
+            
+            .target-fruit .fruit-emoji {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+            
+            .memory-card .fruit-emoji {
+                width: 64px;
+                height: 64px;
+            }
+            
+            .fruits-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 20px;
+                max-width: 800px;
+            }
+            
+            .fruit-item {
+                padding: 15px;
+                min-height: 140px;
+            }
+            
+            .fruit-name {
+                font-size: 1.4rem;
+            }
+        }
+
+        .level-score-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.98);
+            padding: 35px 45px;
+            border-radius: 25px;
+            text-align: center;
+            z-index: 300;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+            border: 4px solid #32CD32;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .level-intro-screen {
+            padding-top: 10px;
+        }
+
+        .score-section {
+            background: rgba(255,255,255,0.95);
+            padding: 25px 35px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 20px auto;
+            max-width: 400px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border: 3px solid #32CD32;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .score-section .score-title {
+            font-size: 1.6rem;
+            color: #8B4513;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .score-section .score-details {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .score-section .score-counter {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .coin-rain {
+            position: fixed;
+            width: 48px;
+            height: 48px;
+            background: #FFD700;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 250;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+        }
+
+        .coin-rain.fall-left {
+            animation: coinFallLeft 2s ease-in forwards;
+        }
+
+        .coin-rain.fall-right {
+            animation: coinFallRight 2s ease-in forwards;
+        }
+
+        @keyframes coinFallLeft {
+            0% { 
+                transform: translateY(-100px) translateX(-200px) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(100vh) translateX(-400px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes coinFallRight {
+            0% { 
+                transform: translateY(-100px) translateX(200px) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(100vh) translateX(400px) rotate(-720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes countUp {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .sparkle {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 280;
+            animation: sparkleFloat 1.5s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% { 
+                opacity: 1; 
+                transform: scale(0) rotate(0deg);
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1) rotate(180deg);
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(0.3) rotate(360deg) translateY(-100px);
+            }
+        }
+
+        @keyframes slideIn {
+            0% { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .next-level-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            font-size: 1.4rem;
+            background: #32CD32;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 200;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .next-level-button:hover {
+            transform: translateX(-50%) scale(1.05);
+            background: #28a745;
+        }
+
+        .start-button, .continue-button {
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            margin: 15px 15px 30px 15px;
+            max-width: 85%;
+        }
+
+        .next-level-button {
+            font-size: 1.1rem;
+            padding: 12px 25px;
+            bottom: 15px;
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <div id="coinLabel">💰 0</div>
+        <div id="timerBox" class="hidden">40</div>
         <!-- מסך פתיחה -->
         <div class="intro-screen" id="introScreen">
             <h1>🌟 שבעת המינים נינג'ה 🌟</h1>
@@ -584,13 +912,13 @@
                 <h2 style="color: #8B4513; margin: 20px 0 15px 0; font-size: 1.4rem;">🎯 בחרו רמת קושי:</h2>
                 <div class="difficulty-buttons">
                     <button class="difficulty-btn" data-difficulty="1">
-                        🐌 איטי<br><span>למתחילים</span>
+                        🐌 איטי<br><span>3 דקות</span>
                     </button>
                     <button class="difficulty-btn" data-difficulty="2">
-                        🚀 בינוני<br><span>רגיל</span>
+                        🚀 בינוני<br><span>1:30 דקות</span>
                     </button>
                     <button class="difficulty-btn" data-difficulty="3">
-                        ⚡ מהיר<br><span>מתקדמים</span>
+                        ⚡ מהיר<br><span>45 שניות</span>
                     </button>
                 </div>
             </div>
@@ -617,23 +945,28 @@
                 </div>
                 <div class="game-stats">
                     <span>נקודות: <span id="score">0</span></span>
-                    <span>יעד: <span id="target">5</span></span>
+                    <span>יעד: <span id="cutsLabel">0/5 חתכים</span></span>
                     <span>חיים: <span id="lives">❤️❤️❤️</span></span>
                 </div>
             </div>
+            
+            <!-- כפתור מעבר לשלב הבא -->
+            <button class="next-level-button hidden" id="nextLevelBtn">
+                🎯 עבור לשלב הבא! 🎯
+            </button>
         </div>
     </div>
 
     <script>
         // משתני משחק
         const fruits = {
-            wheat: { emoji: '🌾', name: 'חיטה', points: 10 },
-            barley: { emoji: '🌿', name: 'שעורה', points: 10 },
-            grape: { emoji: '🍇', name: 'ענבים', points: 15 },
-            fig: { emoji: '🍈', name: 'תאנה', points: 15 },
-            pomegranate: { emoji: '🍎', name: 'רימון', points: 20 },
-            olive: { emoji: '🫒', name: 'זית', points: 20 },
-            date: { emoji: '🌴', name: 'תמר', points: 25 }
+            wheat: { emoji: '🌾', name: 'חיטה', points: 1 },
+            barley: { emoji: '🌿', name: 'שעורה', points: 1 },
+            grape: { emoji: '🍇', name: 'ענבים', points: 2 },
+            fig: { emoji: 'fig_64.png', name: 'תאנה', points: 2 },
+            pomegranate: { emoji: 'pomegranate_64.png', name: 'רימון', points: 3 },
+            olive: { emoji: 'olive_transparent_64.png', name: 'זית', points: 3 },
+            date: { emoji: '🌴', name: 'תמר', points: 3 }
         };
 
         const DISTRACTORS = {
@@ -646,6 +979,12 @@
             cucumber: { emoji: '🥒', name: 'מלפפון' },
             tomato: { emoji: '🍅', name: 'עגבניה' },
             pepper: { emoji: '🌶️', name: 'פלפל' }
+        };
+
+        const DIFFICULTY = {
+            1: { spawnInterval: 2000, v0: 2, vRand: 3, acceleration: 0, burstChance: 0, timeLimit: 180 }, // 3 דקות
+            2: { spawnInterval: 1200, v0: 4, vRand: 3, acceleration: 0, burstChance: 0.15, timeLimit: 90 }, // דקה וחצי
+            3: { spawnInterval: 800, v0: 7, vRand: 4, acceleration: 0.25, burstChance: 0.35, timeLimit: 45 } // 45 שניות
         };
 
         const LEVELS = [
@@ -675,13 +1014,18 @@
         let score = 0;
         let lives = 3;
         let correctCuts = 0;
+        let levelPoints = 0; // איפוס נקודות השלב
         let gameActive = false;
         let fallingFruits = [];
         let spawnRate = 2000;
         let gameInterval;
         let spawnInterval;
+        let timerInterval;
+        let timeLeft = 40;
         let clickedFruits = new Set();
         let baseSpeed, randSpeed;
+        let coins = 0;
+        let currentDifficulty = 1;
 
         // אלמנטים
         const introScreen = document.getElementById('introScreen');
@@ -695,7 +1039,7 @@
             item.addEventListener('click', () => {
                 const fruitKey = item.dataset.fruit;
                 const fruitName = fruits[fruitKey].name;
-                speak(fruitName);
+                // הסרת הקול - speak(fruitName);
                 
                 // הוספת אינדיקציה שנלחץ
                 if (!item.classList.contains('clicked')) {
@@ -751,6 +1095,7 @@
 
         // בחירת רמה 1 כברירת מחדל
         document.querySelector('.difficulty-btn[data-difficulty="1"]').classList.add('selected');
+        currentDifficulty = 1;
 
         // התחלת משחק
         startGameBtn.addEventListener('click', () => {
@@ -764,18 +1109,13 @@
 
         continueBtn.addEventListener('click', startLevel);
 
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'he-IL';
-                utterance.rate = 0.8;
-                speechSynthesis.speak(utterance);
-            }
-        }
-
         function showLevelIntro() {
             introScreen.classList.add('hidden');
             levelIntroScreen.classList.remove('hidden');
+            
+            // הצגת כפתור המשך
+            const continueBtn = document.getElementById('continueBtn');
+            continueBtn.style.display = 'block';
             
             const level = LEVELS[currentLevel];
             document.getElementById('levelIntroTitle').textContent = `שלב ${currentLevel + 1}`;
@@ -783,24 +1123,20 @@
             const fruitsContainer = document.getElementById('levelIntroFruits');
             fruitsContainer.innerHTML = '';
             
+            // ניקוי מסכי תוצאות קודמים
+            const existingScoreSections = levelIntroScreen.querySelectorAll('.score-section');
+            existingScoreSections.forEach(section => section.remove());
+            
             level.targets.forEach(fruitKey => {
                 const fruit = fruits[fruitKey];
                 const fruitDiv = document.createElement('div');
                 fruitDiv.className = 'fruit-item';
-                if (fruitKey === 'fig' || fruitKey === 'pomegranate' || fruitKey === 'olive') {
-                    const imgSrc = fruitKey === 'olive' ? 'olive_transparent_64.png' : `${fruitKey}_64.png`;
-                    fruitDiv.innerHTML = `
-                        <img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">
-                        <div class="fruit-name">${fruit.name}</div>
-                    `;
-                } else {
-                    fruitDiv.innerHTML = `
-                        <div class="fruit-emoji">${fruit.emoji}</div>
-                        <div class="fruit-name">${fruit.name}</div>
-                    `;
-                }
+                fruitDiv.innerHTML = `
+                    ${getFruitHTML(fruitKey)}
+                    <div class="fruit-name">${fruit.name}</div>
+                `;
                 fruitDiv.addEventListener('click', () => {
-                    speak(fruit.name);
+                    // הסרת הקול - speak(fruit.name);
                     fruitDiv.style.transform = 'scale(1.2)';
                     setTimeout(() => {
                         fruitDiv.style.transform = 'scale(1)';
@@ -814,22 +1150,80 @@
             levelIntroScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
             
+            // הצגת טיימר
+            document.getElementById('timerBox').classList.remove('hidden');
+            
+            // הסתרת כפתור מעבר לשלב הבא
+            document.getElementById('nextLevelBtn').classList.add('hidden');
+            
             // איפוס משתנים
             correctCuts = 0;
+            levelPoints = 0; // איפוס נקודות השלב
             lives = 3;
+            timeLeft = DIFFICULTY[currentDifficulty].timeLimit; // זמן לפי רמת קושי
             gameActive = true;
             
             updateUI();
             initSliceEvents(); // הפעלת אירועי חיתוך
             startGameLoop();
+            startTimer();
             
             console.log('Game started - slice events initialized'); // דיבוג
+        }
+
+        function startTimer() {
+            const timerBox = document.getElementById('timerBox');
+            timerBox.textContent = formatTime(timeLeft);
+            timerBox.classList.remove('warning');
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerBox.textContent = formatTime(timeLeft);
+                
+                // אזהרה כשנשארו 10 שניות
+                if (timeLeft <= 10) {
+                    timerBox.classList.add('warning');
+                }
+                
+                if (timeLeft <= 0) {
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return minutes > 0 ? `${minutes}:${remainingSeconds.toString().padStart(2, '0')}` : remainingSeconds.toString();
+        }
+
+        function timeUp() {
+            gameActive = false;
+            clearInterval(gameInterval);
+            clearInterval(spawnInterval);
+            clearInterval(timerInterval);
+            
+            // הסתרת טיימר
+            document.getElementById('timerBox').classList.add('hidden');
+            
+            // ניקוי פירות נופלים
+            fallingFruits.forEach(fruit => fruit.element.remove());
+            fallingFruits = [];
+            
+            if (correctCuts >= 5) {
+                alert(`כל הכבוד! סיימתם את שלב ${currentLevel + 1} בזמן!`);
+                levelComplete();
+            } else {
+                alert(`הזמן נגמר! הצלחתם לחתוך ${correctCuts}/5 מינים. נסו שוב!`);
+                gameOver();
+            }
         }
 
         function updateUI() {
             const level = LEVELS[currentLevel];
             document.getElementById('currentLevelTitle').textContent = level.title;
             document.getElementById('score').textContent = score;
+            document.getElementById('cutsLabel').textContent = `${correctCuts}/5 חתכים`;
             document.getElementById('lives').textContent = `❤️ ${lives}`;
             
             const targetDisplay = document.getElementById('targetFruitsDisplay');
@@ -839,30 +1233,34 @@
                 const fruit = fruits[fruitKey];
                 const targetDiv = document.createElement('div');
                 targetDiv.className = 'target-fruit';
-                if (fruitKey === 'fig' || fruitKey === 'pomegranate' || fruitKey === 'olive') {
-                    const imgSrc = fruitKey === 'olive' ? 'olive_transparent_64.png' : `${fruitKey}_64.png`;
-                    targetDiv.innerHTML = `
-                        <img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">
-                        <div class="fruit-name">${fruit.name}</div>
-                    `;
-                } else {
-                    targetDiv.innerHTML = `
-                        <div class="fruit-emoji">${fruit.emoji}</div>
-                        <div class="fruit-name">${fruit.name}</div>
-                    `;
-                }
+                targetDiv.innerHTML = `
+                    ${getFruitHTML(fruitKey)}
+                    <div class="fruit-name">${fruit.name} (${fruit.points})</div>
+                `;
                 targetDisplay.appendChild(targetDiv);
             });
+
+            // הצגת/הסתרת כפתור מעבר לשלב הבא
+            const nextLevelBtn = document.getElementById('nextLevelBtn');
+            if (correctCuts >= 5) {
+                nextLevelBtn.classList.remove('hidden');
+            } else {
+                nextLevelBtn.classList.add('hidden');
+            }
         }
 
         function startGameLoop() {
-            spawnInterval = setInterval(spawnFruit, spawnRate);
+            const currentRules = DIFFICULTY[currentDifficulty || 1];
+            spawnInterval = setInterval(spawnFruit, currentRules.spawnInterval);
             gameInterval = setInterval(updateGame, 50);
         }
 
         function spawnFruit() {
             if (!gameActive) return;
             
+            console.log('Spawning fruit - gameActive:', gameActive, 'currentDifficulty:', currentDifficulty);
+            
+            const currentRules = DIFFICULTY[currentDifficulty || 1];
             const level = LEVELS[currentLevel];
             const allFruits = [...level.targets, ...Object.keys(DISTRACTORS)];
             const randomFruit = allFruits[Math.floor(Math.random() * allFruits.length)];
@@ -879,9 +1277,8 @@
             const fruitElement = document.createElement('div');
             fruitElement.className = 'falling-fruit';
             
-            if (randomFruit === 'fig' || randomFruit === 'pomegranate' || randomFruit === 'olive') {
-                const imgSrc = randomFruit === 'olive' ? 'olive_transparent_64.png' : `${randomFruit}_64.png`;
-                fruitElement.innerHTML = `<img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">`;
+            if (level.targets.includes(randomFruit)) {
+                fruitElement.innerHTML = getFruitHTML(randomFruit);
             } else {
                 fruitElement.innerHTML = `<div class="fruit-emoji">${fruit.emoji}</div>`;
             }
@@ -890,26 +1287,18 @@
             fruitElement.style.top = '-80px';
             fruitElement.dataset.isTarget = isTarget;
             fruitElement.dataset.fruitKey = randomFruit;
-            
             fruitElement.style.pointerEvents = 'auto';
             
-            if (typeof currentDifficulty === 'undefined' || currentDifficulty === 1) {
-                baseSpeed = 2;
-                randSpeed = 3;
-            } else if (currentDifficulty === 2) {
-                baseSpeed = 5;
-                randSpeed = 3;
-            } else if (currentDifficulty === 3) {
-                baseSpeed = 11;
-                randSpeed = 5;
-            }
+            const speed = currentRules.v0 + Math.random() * currentRules.vRand;
             fallingFruits.push({
                 element: fruitElement,
                 y: -80,
-                speed: baseSpeed + Math.random() * randSpeed
+                speed: speed,
+                acceleration: currentRules.acceleration
             });
             
             gameScreen.appendChild(fruitElement);
+            console.log('Fruit spawned:', randomFruit, 'isTarget:', isTarget, 'speed:', speed);
         }
 
         let isSlicing = false;
@@ -934,8 +1323,10 @@
 
         function startSlice(e) {
             if (!gameActive) return;
+            console.log('Start slice - gameActive:', gameActive);
             e.preventDefault();
             isSlicing = true;
+            document.body.classList.add('slicing'); // הוספת סמן חרב
             handleSlice(e);
         }
 
@@ -959,11 +1350,17 @@
             
             if (!x || !y) return;
             
+            // יצירת אפקט חיתוך חזותי
+            createSliceTrail(x, y);
+            
             // חיפוש פירות בנקודת החיתוך
             const elements = document.elementsFromPoint(x, y);
             const fruitElement = elements.find(el => el.classList.contains('falling-fruit'));
             
+            console.log('Handle slice - x:', x, 'y:', y, 'fruitElement:', fruitElement);
+            
             if (fruitElement && !fruitElement.dataset.cut) {
+                console.log('Cutting fruit:', fruitElement.dataset.fruitKey);
                 cutFruit(fruitElement, x, y);
                 fruitElement.dataset.cut = 'true';
             }
@@ -971,6 +1368,7 @@
 
         function endSlice(e) {
             isSlicing = false;
+            document.body.classList.remove('slicing'); // הסרת סמן חרב
         }
 
         function cutFruit(fruitElement, x, y) {
@@ -984,12 +1382,12 @@
             createSliceEffect(x, y);
             
             if (isTarget) {
-                score += fruits[fruitKey].points;
+                const fruitPoints = fruits[fruitKey].points;
+                score += fruitPoints;
+                levelPoints += fruitPoints; // הוספת נקודות לשלב
                 correctCuts++;
                 
-                if (correctCuts >= 5) {
-                    levelComplete();
-                }
+                // לא עוברים שלב אוטומטית - השחקן יכול להמשיך לצבור נקודות
             } else {
                 lives--;
                 if (lives <= 0) {
@@ -1017,11 +1415,10 @@
                 piece.className = 'fruit-piece';
                 
                 // בחירת תצוגה לחלק
-                if (fruitKey === 'fig' || fruitKey === 'pomegranate' || fruitKey === 'olive') {
-                    const imgSrc = fruitKey === 'olive' ? 'olive_transparent_64.png' : `${fruitKey}_64.png`;
-                    piece.innerHTML = `<img src="${imgSrc}" class="fruit-emoji" alt="${fruits[fruitKey].name}">`;
+                if (fruits[fruitKey]) {
+                    piece.innerHTML = getFruitHTML(fruitKey);
                 } else {
-                    piece.innerHTML = `<div class="fruit-emoji">${fruits[fruitKey].emoji}</div>`;
+                    piece.innerHTML = `<div class="fruit-emoji">${DISTRACTORS[fruitKey].emoji}</div>`;
                 }
                 
                 piece.style.left = centerX + 'px';
@@ -1082,10 +1479,21 @@
             setTimeout(() => effect.remove(), 300);
         }
 
+        function createSliceTrail(x, y) {
+            const trail = document.createElement('div');
+            trail.className = 'slice-trail';
+            trail.style.left = x + 'px';
+            trail.style.top = y + 'px';
+            document.body.appendChild(trail);
+            
+            setTimeout(() => trail.remove(), 500);
+        }
+
         function updateGame() {
             if (!gameActive) return;
             
             fallingFruits.forEach((fruit, index) => {
+                fruit.speed += fruit.acceleration || 0;
                 fruit.y += fruit.speed;
                 fruit.element.style.top = fruit.y + 'px';
                 
@@ -1100,13 +1508,19 @@
             gameActive = false;
             clearInterval(gameInterval);
             clearInterval(spawnInterval);
+            clearInterval(timerInterval);
+            
+            // הסתרת טיימר
+            document.getElementById('timerBox').classList.add('hidden');
             
             // ניקוי פירות נופלים
             fallingFruits.forEach(fruit => fruit.element.remove());
             fallingFruits = [];
             
-            // הודעת הצלחה
-            alert(`כל הכבוד! סיימתם את שלב ${currentLevel + 1}!`);
+            // הוספת מטבעות - מטבע אחד לכל נקודה
+            const earned = levelPoints;
+            const oldCoins = coins;
+            coins += earned;
             
             currentLevel++;
             
@@ -1115,9 +1529,102 @@
             } else if (LEVELS[currentLevel].type === 'memory') {
                 startMemoryGame();
             } else {
-                // מעבר למסך ביניים של השלב הבא
+                // מעבר למסך ביניים עם אנימציית נקודות ומטבעות
                 gameScreen.classList.add('hidden');
-                showLevelIntro();
+                showLevelIntroWithAnimation(earned, oldCoins);
+            }
+        }
+
+        function showLevelIntroWithAnimation(earnedCoins, oldCoins) {
+            showLevelIntro();
+            
+            // חישוב נקודות שהושגו בשלב הנוכחי
+            const pointsEarned = levelPoints;
+            const previousScore = score - pointsEarned;
+            
+            // הוספת מסך התוצאות למסך המעבר
+            const levelIntroFruits = document.getElementById('levelIntroFruits');
+            
+            // יצירת מסך אנימציית נקודות בתוך המסך הקיים
+            const scoreSection = document.createElement('div');
+            scoreSection.className = 'score-section';
+            
+            scoreSection.innerHTML = `
+                <div style="font-size: 1.6rem; color: #8B4513; margin-bottom: 15px; font-weight: bold;">🎉 כל הכבוד! 🎉</div>
+                <div style="font-size: 1.1rem; color: #666; margin-bottom: 10px;">סיימתם את שלב ${currentLevel}!</div>
+                <div style="font-size: 1rem; color: #666; margin-bottom: 15px;">צברתם ${pointsEarned} נקודות בשלב זה</div>
+                <div id="animatedScore" style="font-size: 2rem; color: #FF6B6B; font-weight: bold; margin: 10px 0;">⭐ ${previousScore}</div>
+                <div style="font-size: 0.9rem; color: #666; margin: 5px 0;">+${pointsEarned} נקודות!</div>
+                <div id="animatedCoins" style="font-size: 2rem; color: #32CD32; font-weight: bold; margin: 10px 0;">💰 ${oldCoins}</div>
+                <div style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">+${earnedCoins} מטבעות חדשים!</div>
+                <div style="font-size: 0.8rem; color: #999; margin-top: 10px; font-style: italic;">השלב הבא מתחיל כשתלחצו "המשך לשלב"</div>
+            `;
+            
+            // הוספת המסך לפני הפירות של השלב הבא
+            levelIntroFruits.parentNode.insertBefore(scoreSection, levelIntroFruits);
+            
+            // אנימציית ספירת נקודות
+            setTimeout(() => {
+                const scoreCounter = document.getElementById('animatedScore');
+                let currentScore = previousScore;
+                const scoreIncrement = pointsEarned / 15;
+                
+                const scoreInterval = setInterval(() => {
+                    currentScore += scoreIncrement;
+                    if (currentScore >= score) {
+                        currentScore = score;
+                        clearInterval(scoreInterval);
+                    }
+                    scoreCounter.textContent = `⭐ ${Math.floor(currentScore)}`;
+                    scoreCounter.style.animation = 'countUp 0.3s ease-out';
+                }, 60);
+            }, 300);
+            
+            // אנימציית ספירת מטבעות
+            setTimeout(() => {
+                const coinCounter = document.getElementById('animatedCoins');
+                let currentCount = oldCoins;
+                const increment = earnedCoins / 20;
+                
+                const countInterval = setInterval(() => {
+                    currentCount += increment;
+                    if (currentCount >= coins) {
+                        currentCount = coins;
+                        clearInterval(countInterval);
+                    }
+                    coinCounter.textContent = `💰 ${Math.floor(currentCount)}`;
+                    coinCounter.style.animation = 'countUp 0.3s ease-out';
+                }, 50);
+                
+                // עדכון התצוגה הגלובלית
+                document.getElementById('coinLabel').textContent = `💰 ${coins}`;
+            }, 800);
+            
+            // אפקט גשם מטבעות
+            for (let i = 0; i < earnedCoins; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.className = `coin-rain ${i % 2 === 0 ? 'fall-left' : 'fall-right'}`;
+                    coin.textContent = '💰';
+                    coin.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * 200) + 'px';
+                    coin.style.top = '0px';
+                    document.body.appendChild(coin);
+                    setTimeout(() => coin.remove(), 2000);
+                }, i * 100 + 1000);
+            }
+            
+            // אפקט ניצוצות
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.textContent = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
+                    sparkle.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * 400) + 'px';
+                    sparkle.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * 300) + 'px';
+                    sparkle.style.fontSize = (16 + Math.random() * 8) + 'px';
+                    document.body.appendChild(sparkle);
+                    setTimeout(() => sparkle.remove(), 1500);
+                }, i * 200 + 500);
             }
         }
 
@@ -1156,18 +1663,10 @@
                 cardDiv.className = 'memory-card';
                 cardDiv.dataset.fruitKey = cardKey;
                 const fruit = fruits[cardKey] || DISTRACTORS[cardKey];
-                if (cardKey === 'fig' || cardKey === 'pomegranate' || cardKey === 'olive') {
-                    const imgSrc = cardKey === 'olive' ? 'olive_transparent_64.png' : `${cardKey}_64.png`;
-                    cardDiv.innerHTML = `
-                        <img src="${imgSrc}" class="fruit-emoji" alt="${fruit.name}">
-                        <div class="fruit-name">${fruit.name}</div>
-                    `;
-                } else {
-                    cardDiv.innerHTML = `
-                        <div class="fruit-emoji">${fruit.emoji}</div>
-                        <div class="fruit-name">${fruit.name}</div>
-                    `;
-                }
+                cardDiv.innerHTML = `
+                    ${fruits[cardKey] ? getFruitHTML(cardKey) : `<div class="fruit-emoji">${fruit.emoji}</div>`}
+                    <div class="fruit-name">${fruit.name}</div>
+                `;
                 cardDiv.addEventListener('click', () => handleCardClick(cardDiv));
                 fruitsContainer.appendChild(cardDiv);
             });
@@ -1254,6 +1753,13 @@
             gameActive = false;
             clearInterval(gameInterval);
             clearInterval(spawnInterval);
+            clearInterval(timerInterval);
+            
+            // הסתרת טיימר
+            document.getElementById('timerBox').classList.add('hidden');
+            
+            // הסרת סמן חרב
+            document.body.classList.remove('slicing');
             
             // ניקוי פירות נופלים
             fallingFruits.forEach(fruit => fruit.element.remove());
@@ -1266,6 +1772,8 @@
             score = 0;
             lives = 3;
             correctCuts = 0;
+            levelPoints = 0;
+            timeLeft = DIFFICULTY[currentDifficulty].timeLimit;
             
             gameScreen.classList.add('hidden');
             showLevelIntro();
@@ -1326,6 +1834,24 @@
         window.addEventListener('resize', setViewportHeight);
         window.addEventListener('orientationchange', setViewportHeight);
         setViewportHeight();
+
+        // פונקציה שמחזירה HTML נכון לפרי
+        function getFruitHTML(fruitKey, className = 'fruit-emoji') {
+            const fruit = fruits[fruitKey];
+            if (fruit.emoji.includes('.png')) {
+                return `<img src="${fruit.emoji}" class="${className}" alt="${fruit.name}">`;
+            } else {
+                return `<div class="${className}">${fruit.emoji}</div>`;
+            }
+        }
+
+        // כפתור מעבר לשלב הבא
+        const nextLevelBtn = document.getElementById('nextLevelBtn');
+        nextLevelBtn.addEventListener('click', () => {
+            if (correctCuts >= 5) {
+                levelComplete();
+            }
+        });
     </script>
 </body>
 </html>
