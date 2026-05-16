@@ -572,6 +572,34 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .memory-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+                margin: 14px auto 12px auto;
+                width: calc(100% - 16px);
+                max-width: 100%;
+            }
+
+            .memory-card {
+                min-height: 72px;
+                min-width: 0;
+                border-radius: 12px;
+                padding: 6px 4px;
+            }
+
+            .memory-card .fruit-emoji {
+                width: 34px !important;
+                height: 34px !important;
+                font-size: 1.5rem !important;
+                margin-bottom: 4px;
+            }
+
+            .memory-card .fruit-name {
+                font-size: 0.72rem;
+            }
+        }
+
         @media (max-width: 480px) {
             .intro-screen h1, .level-intro-screen h1 {
                 font-size: 1.4rem;
@@ -1338,12 +1366,8 @@
         <!-- מסך פתיחה -->
         <div class="intro-screen" id="introScreen">
             <h1>🌾 שבעת המינים נינג'ה 🌾</h1>
-            <div class="intro-tagline">
-                <span class="intro-tag">📖 למדו להכיר</span>
-                <span class="intro-tag">⚔️ חתכו רק אותם</span>
-                <span class="intro-tag">⚠️ היזהרו מפירות מבלבלים</span>
-            </div>
-            <p style="font-size: 0.95rem; margin: 0 16px 14px; color: #8B4513; font-weight: 600; text-align:center;">לחצו על כל מין כדי לפתוח את האתגר 👇</p>
+            <p style="font-size: 1.1rem; margin: 0 20px 8px; color: #8B4513; font-weight: bold; text-align:center;">למדו להכיר את שבעת המינים, חתכו רק אותם, והיזהרו מפירות מבלבלים!</p>
+            <p style="font-size: 1rem; margin: 0 20px 16px; color: #D2691E; text-align:center;">לחצו על כל מין כדי לפתוח את האתגר.</p>
             <div class="fruits-grid">
                 <div class="fruit-item" data-fruit="wheat">
                     <div class="fruit-emoji">🌾</div>
