@@ -111,12 +111,11 @@
             display: flex;
             justify-content: center;
             align-items: stretch;
-            flex-wrap: nowrap;
+            align-self: center;
+            flex-wrap: wrap;
             gap: 16px;
             width: min(90%, 520px);
             margin: 10px auto 20px;
-            overflow-x: auto;
-            scrollbar-width: none;
         }
 
         #levelIntroFruits.level-fruits-grid::-webkit-scrollbar {
@@ -1692,9 +1691,11 @@
             fruitsContainer.innerHTML = '';
             fruitsContainer.className = 'level-fruits-grid';
             
-            // ניקוי מסכי תוצאות קודמים
+            // ניקוי מסכי תוצאות קודמים וכפתורי זיכרון
             const existingScoreSections = levelIntroScreen.querySelectorAll('.score-section');
             existingScoreSections.forEach(section => section.remove());
+            const existingControls = levelIntroScreen.querySelectorAll('.memory-controls');
+            existingControls.forEach(ctrl => ctrl.remove());
             
             level.targets.forEach(fruitKey => {
                 const fruit = fruits[fruitKey];
