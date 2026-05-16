@@ -107,6 +107,27 @@
             width: 90%;
         }
 
+        #levelIntroFruits.level-fruits-grid {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: nowrap;
+            gap: 16px;
+            width: min(90%, 520px);
+            margin: 10px auto 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        #levelIntroFruits.level-fruits-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        #levelIntroFruits.level-fruits-grid .fruit-item {
+            flex: 0 0 140px;
+            width: 140px;
+        }
+
         .fruit-item {
             display: flex;
             flex-direction: column;
@@ -519,6 +540,16 @@
                 margin-bottom: 6px;
             }
 
+            #levelIntroFruits.level-fruits-grid {
+                gap: 10px;
+                width: 95%;
+            }
+
+            #levelIntroFruits.level-fruits-grid .fruit-item {
+                flex-basis: 104px;
+                width: 110px;
+            }
+
             .target-fruit {
                 flex-direction: column;
                 gap: 2px;
@@ -574,29 +605,29 @@
 
         @media (max-width: 768px) {
             .memory-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 8px;
-                margin: 14px auto 12px auto;
-                width: calc(100% - 16px);
-                max-width: 100%;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 8px !important;
+                margin: 14px 8px 12px !important;
+                width: calc(100% - 16px) !important;
+                max-width: calc(100% - 16px) !important;
             }
 
             .memory-card {
-                min-height: 72px;
-                min-width: 0;
-                border-radius: 12px;
-                padding: 6px 4px;
+                min-height: 0 !important;
+                min-width: 0 !important;
+                border-radius: 12px !important;
+                padding: 8px 4px !important;
             }
 
             .memory-card .fruit-emoji {
                 width: 34px !important;
                 height: 34px !important;
                 font-size: 1.5rem !important;
-                margin-bottom: 4px;
+                margin-bottom: 3px !important;
             }
 
             .memory-card .fruit-name {
-                font-size: 0.72rem;
+                font-size: 0.72rem !important;
             }
         }
 
@@ -649,6 +680,21 @@
             .target-fruits {
                 gap: 12px;
                 flex-wrap: nowrap;
+            }
+
+            #levelIntroFruits.level-fruits-grid {
+                flex-wrap: nowrap;
+                gap: 8px;
+                width: 100%;
+                max-width: 360px;
+                padding: 0 10px;
+            }
+
+            #levelIntroFruits.level-fruits-grid .fruit-item {
+                flex: 1 1 0;
+                min-width: 0;
+                width: auto;
+                max-width: 108px;
             }
 
             .game-stats {
@@ -1644,6 +1690,7 @@
             
             const fruitsContainer = document.getElementById('levelIntroFruits');
             fruitsContainer.innerHTML = '';
+            fruitsContainer.className = 'level-fruits-grid';
             
             // ניקוי מסכי תוצאות קודמים
             const existingScoreSections = levelIntroScreen.querySelectorAll('.score-section');
