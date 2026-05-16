@@ -1883,7 +1883,12 @@
             fallingFruits.forEach(fruit => fruit.element.remove());
             fallingFruits = [];
             
-            showGameMessage('המשחק נגמר', 'תתחילו מחדש ותנסו שוב!', 'שחקו שוב', resetAfterGameOver);
+            showGameMessage(
+                'אוי, נפסלתם!',
+                'שימו לב לחתוך רק את שבעת המינים של השלב. פרי לא נכון מוריד חיים.',
+                'שחקו שוב',
+                resetAfterGameOver
+            );
         }
 
         function resetAfterGameOver() {
@@ -1948,6 +1953,7 @@
         }, { passive: false });
         
         document.addEventListener('touchstart', function(e) {
+            if (e.target.closest('button')) return;
             if (gameActive) e.preventDefault();
         }, { passive: false });
 
@@ -1978,10 +1984,17 @@
 
         // כפתור מעבר לשלב הבא
         const nextLevelBtn = document.getElementById('nextLevelBtn');
-        nextLevelBtn.addEventListener('click', () => {
+        function goToNextLevel() {
             if (correctCuts >= 5) {
                 levelComplete();
             }
+        }
+
+        nextLevelBtn.addEventListener('click', goToNextLevel);
+        nextLevelBtn.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            goToNextLevel();
         });
     </script>
 </body>
