@@ -17,6 +17,8 @@
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #87CEEB, #98FB98);
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            height: 100dvh;
             overflow: hidden;
             touch-action: none;
             margin: 0;
@@ -33,6 +35,8 @@
         .game-container {
             width: 100%;
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            height: 100dvh;
             position: relative;
             overflow: hidden;
         }
@@ -41,6 +45,8 @@
             position: absolute;
             width: 100%;
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100);
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -415,9 +421,10 @@
             }
             
             .game-header {
-                top: 5px;
-                padding: 6px 12px;
-                max-width: 95%;
+                top: 54px;
+                padding: 6px 10px;
+                max-width: calc(100% - 18px);
+                border-radius: 13px;
             }
             
             .level-title {
@@ -436,6 +443,26 @@
             .game-stats {
                 font-size: 0.8rem;
                 gap: 8px;
+                flex-wrap: wrap;
+                line-height: 1.2;
+            }
+
+            #coinLabel {
+                top: 8px;
+                right: 8px;
+                padding: 7px 10px;
+                border-radius: 14px;
+                font-size: 0.95rem;
+            }
+
+            #timerBox {
+                top: 8px;
+                left: 8px;
+                min-width: 68px;
+                padding: 8px 12px;
+                border-radius: 16px;
+                border-width: 3px;
+                font-size: 1.15rem;
             }
             
             .start-button, .continue-button {
@@ -484,6 +511,32 @@
             .start-button, .continue-button {
                 font-size: 1rem;
                 padding: 8px 16px;
+            }
+
+            .game-header {
+                top: 50px;
+                padding: 5px 8px;
+            }
+
+            .target-fruits {
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+
+            .game-stats {
+                font-size: 0.72rem;
+                gap: 6px;
+            }
+
+            #timerBox {
+                min-width: 60px;
+                padding: 7px 10px;
+                font-size: 1rem;
+            }
+
+            #coinLabel {
+                padding: 6px 9px;
+                font-size: 0.9rem;
             }
         }
 
@@ -863,7 +916,7 @@
         .next-level-button {
             font-size: 1.1rem;
             padding: 12px 25px;
-            bottom: 15px;
+            bottom: calc(15px + env(safe-area-inset-bottom, 0px));
         }
 
         .message-overlay {
