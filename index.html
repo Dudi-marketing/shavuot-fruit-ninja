@@ -865,6 +865,87 @@
             padding: 12px 25px;
             bottom: 15px;
         }
+
+        .message-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 500;
+        }
+
+        .message-box {
+            width: min(92vw, 420px);
+            background: rgba(255, 255, 255, 0.98);
+            border: 4px solid #32CD32;
+            border-radius: 24px;
+            padding: 26px 24px;
+            text-align: center;
+            color: #8B4513;
+            box-shadow: 0 14px 38px rgba(0, 0, 0, 0.35);
+            animation: messagePop 0.25s ease-out;
+        }
+
+        .message-box h2 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .message-box p {
+            font-size: 1.15rem;
+            line-height: 1.45;
+            margin-bottom: 22px;
+        }
+
+        .message-box button {
+            border: none;
+            border-radius: 22px;
+            background: #32CD32;
+            color: white;
+            cursor: pointer;
+            font-size: 1.15rem;
+            font-weight: bold;
+            padding: 12px 28px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        .message-box button:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes messagePop {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .message-box {
+                padding: 22px 18px;
+                border-radius: 20px;
+            }
+
+            .message-box h2 {
+                font-size: 1.45rem;
+            }
+
+            .message-box p {
+                font-size: 1rem;
+            }
+
+            .message-box button {
+                width: 100%;
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -957,6 +1038,14 @@
         </div>
     </div>
 
+    <div class="message-overlay hidden" id="messageOverlay" role="dialog" aria-modal="true" aria-labelledby="messageTitle">
+        <div class="message-box">
+            <h2 id="messageTitle"></h2>
+            <p id="messageText"></p>
+            <button id="messageButton">אישור</button>
+        </div>
+    </div>
+
     <script>
         // משתני משחק
         const fruits = {
@@ -1033,6 +1122,28 @@
         const gameScreen = document.getElementById('gameScreen');
         const startGameBtn = document.getElementById('startGameBtn');
         const continueBtn = document.getElementById('continueBtn');
+        const messageOverlay = document.getElementById('messageOverlay');
+        const messageTitle = document.getElementById('messageTitle');
+        const messageText = document.getElementById('messageText');
+        const messageButton = document.getElementById('messageButton');
+        let messageCallback = null;
+
+        function showGameMessage(title, text, buttonText = 'אישור', onConfirm = null) {
+            messageTitle.textContent = title;
+            messageText.textContent = text;
+            messageButton.textContent = buttonText;
+            messageCallback = onConfirm;
+            messageOverlay.classList.remove('hidden');
+        }
+
+        function closeGameMessage() {
+            messageOverlay.classList.add('hidden');
+            const callback = messageCallback;
+            messageCallback = null;
+            if (callback) callback();
+        }
+
+        messageButton.addEventListener('click', closeGameMessage);
 
         // הקראת שמות בפתיחה
         document.querySelectorAll('.fruit-item').forEach(item => {
@@ -1103,7 +1214,7 @@
                 showLevelIntro();
             } else {
                 const remaining = 7 - clickedFruits.size;
-                alert(`עדיין צריך ללחוץ על ${remaining} מינים נוספים!`);
+                showGameMessage('עוד רגע מתחילים', `עדיין צריך ללחוץ על ${remaining} מינים נוספים!`);
             }
         });
 
@@ -1211,11 +1322,19 @@
             fallingFruits = [];
             
             if (correctCuts >= 5) {
-                alert(`כל הכבוד! סיימתם את שלב ${currentLevel + 1} בזמן!`);
-                levelComplete();
+                showGameMessage(
+                    'כל הכבוד!',
+                    `סיימתם את שלב ${currentLevel + 1} בזמן!`,
+                    'המשך',
+                    levelComplete
+                );
             } else {
-                alert(`הזמן נגמר! הצלחתם לחתוך ${correctCuts}/5 מינים. נסו שוב!`);
-                gameOver();
+                showGameMessage(
+                    'הזמן נגמר',
+                    `הצלחתם לחתוך ${correctCuts}/5 מינים. נסו שוב!`,
+                    'שחקו שוב',
+                    resetAfterGameOver
+                );
             }
         }
 
@@ -1731,21 +1850,20 @@
             });
             setTimeout(() => {
                 if (correct === 7) {
-                    alert('אתם אלופים! היה כייף ללמוד איתכם על שבעת המינים תוך כדי משחק! 🌟');
+                    showGameMessage(
+                        'אתם אלופים!',
+                        'היה כייף ללמוד איתכם על שבעת המינים תוך כדי משחק!',
+                        'שחקו שוב',
+                        resetToIntro
+                    );
                 } else {
-                    alert('לא כל הבחירות נכונות, נסו שוב!');
+                    showGameMessage(
+                        'כמעט!',
+                        'לא כל הבחירות נכונות, נסו שוב!',
+                        'שחקו שוב',
+                        resetToIntro
+                    );
                 }
-                // חזרה למסך פתיחה בלבד
-                currentLevel = 0;
-                score = 0;
-                lives = 3;
-                correctCuts = 0;
-                clickedFruits.clear();
-                selectedCards.clear();
-                gameScreen.classList.add('hidden');
-                levelIntroScreen.classList.add('hidden');
-                introScreen.classList.remove('hidden');
-                updateStartButton();
             }, 1200);
         }
 
@@ -1765,9 +1883,10 @@
             fallingFruits.forEach(fruit => fruit.element.remove());
             fallingFruits = [];
             
-            alert('המשחק נגמר! תתחילו מחדש');
-            
-            // איפוס למשחק מחדש
+            showGameMessage('המשחק נגמר', 'תתחילו מחדש ותנסו שוב!', 'שחקו שוב', resetAfterGameOver);
+        }
+
+        function resetAfterGameOver() {
             currentLevel = 0;
             score = 0;
             lives = 3;
@@ -1782,16 +1901,28 @@
         function gameWin() {
             const allSevenSelected = Object.keys(fruits).every(key => selectedCards.has(key));
             if (allSevenSelected) {
-                alert('אתם אלופים! היה כייף ללמוד איתכם על שבעת המינים תוך כדי משחק! 🌟');
+                showGameMessage(
+                    'אתם אלופים!',
+                    'היה כייף ללמוד איתכם על שבעת המינים תוך כדי משחק!',
+                    'שחקו שוב',
+                    resetToIntro
+                );
             } else {
-                alert('כל הכבוד! סיימתם את כל השלבים!\nלמדתם את שבעת המינים!');
+                showGameMessage(
+                    'כל הכבוד!',
+                    'סיימתם את כל השלבים ולמדתם את שבעת המינים!',
+                    'שחקו שוב',
+                    resetToIntro
+                );
             }
-            
-            // איפוס למשחק מחדש
+        }
+
+        function resetToIntro() {
             currentLevel = 0;
             score = 0;
             lives = 3;
             correctCuts = 0;
+            levelPoints = 0;
             clickedFruits.clear();
             selectedCards.clear();
             
